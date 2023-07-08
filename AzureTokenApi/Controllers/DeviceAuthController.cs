@@ -9,7 +9,13 @@ namespace AzureTokenApi.Controllers;
 [Route("deviceauth")]
 public class DeviceAuthController : ControllerBase
 {
+    /// <summary>
+    /// Get a device code for Azure AD authentication.
+    /// </summary>
+    /// <remarks>See https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code for more info</remarks>
+    /// <response code="200">New user code was issued</response>
     [HttpGet("get-code")]
+    [ProducesResponseType(typeof(DeviceAuthResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCode()
     {
         using var client = CreateHttpClient();
@@ -26,7 +32,16 @@ public class DeviceAuthController : ControllerBase
         return Ok(authResponse);
     }
 
+    /// <summary>
+    /// Redeem a device code for an access token.
+    /// </summary>
+    /// <remarks>Complete login specified in the previous step</remarks>
+    /// <param name="deviceCode">Device code, returned from "get-code" endpoint</param>
+    /// <response code="200">Successfully obtained access token</response>
+    /// <response code="400">Code is invalid, or user has not complete auth</response>
     [HttpGet("get-token")]
+    [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetToken([FromQuery(Name = "device_code"), Required] string deviceCode)
     {
         using var client = CreateHttpClient();
