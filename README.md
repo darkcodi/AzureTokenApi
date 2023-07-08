@@ -1,5 +1,4 @@
 # AzureTokenApi
-[![Fly Deploy](https://github.com/darkcodi/AzureTokenApi/actions/workflows/fly.yml/badge.svg)](https://github.com/darkcodi/AzureTokenApi/actions/workflows/fly.yml)  
 It's an HTTP API that provides a convenient way to obtain access tokens for Azure services using the simplest flow - [device code auth](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code). This repository aims to simplify the process of acquiring Azure access tokens, allowing developers to focus on integrating Azure services into their applications without worrying about the intricacies of authentication.
 
 ## Demo
