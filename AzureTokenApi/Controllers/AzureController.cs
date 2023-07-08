@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace AzureTokenApi.Controllers;
 
 [ApiController]
-[Route("deviceauth")]
-public class DeviceAuthController : ControllerBase
+[Route("az")]
+public class AzureController : ControllerBase
 {
     /// <summary>
     /// Get a device code for Azure AD authentication.
