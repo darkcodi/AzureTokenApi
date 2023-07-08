@@ -5,6 +5,11 @@
 
 app = "azure-token-api"
 primary_region = "ewr"
+kill_signal = "SIGINT"
+kill_timeout = 5
+
+[deploy]
+strategy = "immediate"
 
 [http_service]
   internal_port = 8080
@@ -13,3 +18,10 @@ primary_region = "ewr"
   auto_start_machines = true
   min_machines_running = 0
   processes = ["app"]
+  [[http_service.checks]]
+    grace_period = "5s"
+    interval = "15s"
+    method = "GET"
+    timeout = "5s"
+    path = "/"
+
