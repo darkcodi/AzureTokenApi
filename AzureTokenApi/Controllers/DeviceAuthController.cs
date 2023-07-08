@@ -66,6 +66,51 @@ public class DeviceAuthController : ControllerBase
         return Ok(JsonSerializer.Deserialize<TokenResponse>(body));
     }
 
+    /// <summary>
+    /// Redeem a device code for an access token.
+    /// </summary>
+    /// <param name="refreshToken">Refresh token, returned from "get-token" endpoint</param>
+    /// <param name="tenantId">Tenant id</param>
+    /// <param name="scope">Requested token scope</param>
+    /// <response code="200">Successfully obtained access token</response>
+    /// <response code="400">Refresh token is invalid</response>
+    [HttpGet("refresh-token")]
+    [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RefreshToken(
+        [FromQuery(Name = "refresh_token"), Required] string refreshToken,
+        [FromQuery(Name = "tenant_id")] string tenantId = null,
+        [FromQuery(Name = "scope")] string scope = null)
+    {
+        using var client = CreateHttpClient();
+        var url = string.IsNullOrEmpty(tenantId)
+            ? "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+            : $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
+        if (string.IsNullOrEmpty(scope))
+        {
+            scope = "https://management.core.windows.net//.default offline_access openid profile";
+        }
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Content = new FormUrlEncodedContent(new[]
+        {
+            new KeyValuePair<string, string>("client_id", "04b07795-8ddb-461a-bbee-02f9e1bf7b46"),
+            new KeyValuePair<string, string>("grant_type", "refresh_token"),
+            new KeyValuePair<string, string>("client_info", "1"),
+            new KeyValuePair<string, string>("claims", "{\"access_token\": {\"xms_cc\": {\"values\": [\"CP1\"]}}}"),
+            new KeyValuePair<string, string>("refresh_token", refreshToken),
+            new KeyValuePair<string, string>("scope", scope),
+        });
+
+        var response = await client.SendAsync(request);
+        var body = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            return BadRequest(JsonSerializer.Deserialize<ErrorResponse>(body));
+        }
+
+        return Ok(JsonSerializer.Deserialize<TokenResponse>(body));
+    }
+
     private static HttpClient CreateHttpClient()
     {
         return new HttpClient
