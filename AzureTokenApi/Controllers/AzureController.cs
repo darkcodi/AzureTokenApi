@@ -112,29 +112,6 @@ public class AzureController : ControllerBase
         return Ok(JsonSerializer.Deserialize<TokenResponse>(body));
     }
 
-    /// <summary>
-    /// Redeem an access token for a DB access token.
-    /// </summary>
-    /// <remarks>Access token should be tied to a proper tenant.</remarks>
-    /// <param name="accessToken">Access token, returned from "refresh-token" endpoint</param>
-    /// <response code="200">Successfully obtained DB access token</response>
-    [HttpGet("db-token")]
-    [ProducesResponseType(typeof(DbTokenResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> DbToken([FromQuery(Name = "access_token"), Required] string accessToken)
-    {
-        var service = new Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider();
-        var appAuthResult = await service.GetAuthenticationResultAsync("https://database.windows.net/");
-        var response = new DbTokenResponse
-        {
-            AccessToken = appAuthResult.AccessToken,
-            ExpiresOn = appAuthResult.ExpiresOn,
-            Resource = appAuthResult.Resource,
-            TokenType = appAuthResult.TokenType,
-        };
-
-        return Ok(response);
-    }
-
     private static HttpClient CreateHttpClient()
     {
         return new HttpClient
