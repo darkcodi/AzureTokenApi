@@ -33,7 +33,7 @@ public class AzureController : ControllerBase
     }
 
     /// <summary>
-    /// Redeem a device code for an access token.
+    /// Redeem a device code for an access token (management).
     /// </summary>
     /// <remarks>Complete login specified in the previous step</remarks>
     /// <param name="deviceCode">Device code, returned from "get-code" endpoint</param>
@@ -67,8 +67,9 @@ public class AzureController : ControllerBase
     }
 
     /// <summary>
-    /// Redeem a device code for an access token.
+    /// Redeem a refresh token for an access token.
     /// </summary>
+    /// <remarks>You can specify tenant and scope here (unlike in 'get-token' endpoint)</remarks>
     /// <param name="refreshToken">Refresh token, returned from "get-token" endpoint</param>
     /// <param name="tenantId">Tenant id</param>
     /// <param name="scope">Requested token scope</param>
@@ -109,6 +110,29 @@ public class AzureController : ControllerBase
         }
 
         return Ok(JsonSerializer.Deserialize<TokenResponse>(body));
+    }
+
+    /// <summary>
+    /// Redeem an access token for a DB access token.
+    /// </summary>
+    /// <remarks>Access token should be tied to a proper tenant.</remarks>
+    /// <param name="accessToken">Access token, returned from "refresh-token" endpoint</param>
+    /// <response code="200">Successfully obtained DB access token</response>
+    [HttpGet("db-token")]
+    [ProducesResponseType(typeof(DbTokenResponse), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DbToken([FromQuery(Name = "access_token"), Required] string accessToken)
+    {
+        var service = new Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider();
+        var appAuthResult = await service.GetAuthenticationResultAsync("https://database.windows.net/");
+        var response = new DbTokenResponse
+        {
+            AccessToken = appAuthResult.AccessToken,
+            ExpiresOn = appAuthResult.ExpiresOn,
+            Resource = appAuthResult.Resource,
+            TokenType = appAuthResult.TokenType,
+        };
+
+        return Ok(response);
     }
 
     private static HttpClient CreateHttpClient()
