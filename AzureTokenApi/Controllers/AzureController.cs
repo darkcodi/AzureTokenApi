@@ -89,8 +89,9 @@ public class AzureController : ControllerBase
             : $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
         if (string.IsNullOrEmpty(scope))
         {
-            scope = "https://management.core.windows.net//.default offline_access openid profile";
+            scope = "https://management.core.windows.net/";
         }
+        scope += "/.default offline_access openid profile";
         var request = new HttpRequestMessage(HttpMethod.Post, url);
         request.Content = new FormUrlEncodedContent(new[]
         {
