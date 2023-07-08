@@ -76,4 +76,8 @@ Go to https://azure-token-api.fly.dev/swagger
    ```
 3. Navigate to Swagger - http://localhost:8080/swagger/
 ### Docker
-TODO
+1. Run docker container:
+   ```bash
+   docker run -d -p 8080:8080 --name azuretokenapi ghcr.io/darkcodi/azuretokenapi:main
+   ```
+2. Navigate to Swagger - http://localhost:8080/swagger/
