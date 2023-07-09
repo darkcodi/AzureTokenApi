@@ -1,11 +1,13 @@
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.MapHealthChecks("/");
 app.UseSwagger();
 app.UseSwaggerUI();
 
