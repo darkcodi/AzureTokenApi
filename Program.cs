@@ -11,7 +11,6 @@ app.MapHealthChecks("/");
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.Use(async (context, next) =>
 {
